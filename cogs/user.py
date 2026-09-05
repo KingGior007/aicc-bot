@@ -56,7 +56,8 @@ class User(commands.Cog):
             if str(existing["discord"]) != discord_username:
                 await ctx.reply(
                     f"{platform.title()} `{username}` is already linked to "
-                    f"Discord `{existing['discord']}`."
+                    f"Discord `{existing['discord']}`.\n"
+                    "Contact an organizer if you believe that is a mistake."
                 )
                 return
     
@@ -297,10 +298,15 @@ class User(commands.Cog):
         # Check that the user has linked their account
         users_df = pd.read_csv(USERS_CSV)
     
-        if discord_username not in users_df["discord"].astype(str).values:
+        if (
+            discord_username not in users_df["discord"].astype(str).values
+            or users_df.loc[
+                users_df["discord"].astype(str) == discord_username, "kaggle"
+            ].iloc[0] == "None"
+        ):
             await ctx.reply(
                 "You haven't linked your Discord account yet!\n"
-                "Use `!link [kaggle_username]` first."
+                "Use `!link kaggle [kaggle_username]` first."
             )
             return
     
