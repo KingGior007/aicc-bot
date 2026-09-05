@@ -1,0 +1,11 @@
+# Environment variables
+.env
+
+# Bot data
+users.csv
+rounds.csv
+registrations.csv
+entries.csv
+
+# Logs
+discord.log
