@@ -298,17 +298,15 @@ class User(commands.Cog):
         # Check that the user has linked their account
         users_df = pd.read_csv(USERS_CSV)
     
-        if (
-            discord_username not in users_df["discord"].astype(str).values
-            or users_df.loc[
-                users_df["discord"].astype(str) == discord_username, "kaggle"
-            ].iloc[0] == "None"
-        ):
+        user = users_df[users_df["discord"].astype(str) == discord_username]
+
+        if user.empty or pd.isna(user.iloc[0]["kaggle"]):
             await ctx.reply(
                 "You haven't linked your Discord account yet!\n"
                 "Use `!link kaggle [kaggle_username]` first."
             )
             return
+
     
         # Check if already registered
         already_registered = (
