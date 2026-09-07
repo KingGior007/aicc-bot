@@ -40,6 +40,40 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
+ALLOWED_GUILD_IDS = [
+    1406913559446683680,  # AICC Discord
+    1546212376657789121,  # AICC Test
+]
+
+async def leave_unauthorized_guild(guild):
+    for channel in guild.text_channels:
+        if channel.permissions_for(guild.me).send_messages:
+            await channel.send(
+                "This bot is restricted to the AICC servers and cannot be used here. "
+                "The bot will now leave this server."
+            )
+            break
+
+    await guild.leave()
+
+
+@bot.check
+async def only_allowed_servers(ctx):
+    if ctx.guild is None:
+        return False
+
+    if ctx.guild.id not in ALLOWED_GUILD_IDS:
+        await leave_unauthorized_guild(ctx.guild)
+        return False
+
+    return True
+
+
+@bot.event
+async def on_guild_join(guild):
+    if guild.id not in ALLOWED_GUILD_IDS:
+        await leave_unauthorized_guild(guild)
+
 @bot.command(
     brief="Send task submission message",
     help="Send a message with a button for submitting tasks.\n"
