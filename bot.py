@@ -115,6 +115,7 @@ async def task_submission(ctx):
     await ctx.reply("✅ Submission message sent to #submit-a-task.")
 
 async def main():
+    bot.add_view(TaskSubmissionView())
     bot.add_dynamic_items(DynamicTaskButton)
     await bot.load_extension("cogs.user")
     await bot.load_extension("cogs.admin_rounds")

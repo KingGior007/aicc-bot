@@ -201,7 +201,8 @@ class TaskSubmissionView(discord.ui.View):
 
     @discord.ui.button(
         label="Submit",
-        style=discord.ButtonStyle.primary
+        style=discord.ButtonStyle.primary,
+        custom_id="task_submission_view:submit",
     )
     async def submit_task(
         self,
