@@ -9,3 +9,5 @@ entries.csv
 
 # Logs
 discord.log
+
+.venv/
