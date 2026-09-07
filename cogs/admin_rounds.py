@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import os
 import pandas as pd
 from datetime import datetime, timezone
-from views import TaskButton
+from views import DynamicTaskButton
 
 USERS_CSV = "users.csv"
 ROUNDS_CSV = "rounds.csv"
@@ -125,11 +125,14 @@ class Rounds(commands.Cog, name="[ADMIN] Rounds"):
             await ctx.reply("I couldn't find the `#announcements` channel.")
             return
     
+        view = discord.ui.View(timeout=None)
+        view.add_item(DynamicTaskButton(round_name, links))
+
         # Send announcement with button
         await announcements.send(
             f"Participants registered for {round_name} can press the button below to receive the tasks.\n"
             "The time limit starts as soon as you click the button.",
-            view=TaskButton(round_name, links)
+            view=view
         )
     
         await ctx.reply(f"`{round_name}` has started!")

@@ -7,6 +7,7 @@ import os
 import pandas as pd
 from datetime import datetime, timezone
 from views import TaskSubmissionModal, TaskSubmissionView
+from views import DynamicTaskButton
 
 USERS_CSV = "users.csv"
 ROUNDS_CSV = "rounds.csv"
@@ -114,6 +115,7 @@ async def task_submission(ctx):
     await ctx.reply("✅ Submission message sent to #submit-a-task.")
 
 async def main():
+    bot.add_dynamic_items(DynamicTaskButton)
     await bot.load_extension("cogs.user")
     await bot.load_extension("cogs.admin_rounds")
     await bot.load_extension("cogs.admin_files")

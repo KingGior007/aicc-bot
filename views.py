@@ -1,4 +1,5 @@
 import discord
+import re
 from discord.ext import commands
 import logging
 from dotenv import load_dotenv
@@ -13,61 +14,87 @@ ENTRIES_CSV = "entries.csv"
 
 ADMIN_ROLE = "organizer"
 
-class TaskButton(discord.ui.View):
-    def __init__(self, round_name, links):
-        super().__init__(timeout=None)
-        self.round_name = round_name
-        self.links = links
+class DynamicTaskButton(
+    discord.ui.DynamicItem[discord.ui.Button],
+    template=r"task_button:round:(?P<round_name>.+)",
+):
+    def __init__(self, round_name: str, links: list[str]) -> None:
+        self.round_name: str = round_name
+        self.links: list[str] = links
 
-    @discord.ui.button(
-        label="Receive Tasks",
-        style=discord.ButtonStyle.primary
-    )
-    async def receive_tasks(
-        self,
+        super().__init__(
+            discord.ui.Button(
+                label="Receive Tasks",
+                style=discord.ButtonStyle.primary,
+                custom_id=f"task_button:round:{round_name}",
+            )
+        )
+
+    @classmethod
+    async def from_custom_id(
+        cls,
         interaction: discord.Interaction,
-        button: discord.ui.Button
+        item: discord.ui.Button,
+        match: re.Match[str],
+        /,
     ):
+        round_name = match["round_name"]
+
+        # Read the rounds CSV file
+        rounds_df = pd.read_csv(ROUNDS_CSV)
+
+        # Find the row matching the round name
+        round_row = rounds_df[rounds_df["name"].astype(str) == round_name]
+
+        if not round_row.empty:
+            # Extract the raw string from the 'links' column
+            raw_links = str(round_row.iloc[0]["links"])
+            # Split by '|' and trim whitespace off each link
+            links = [link.strip() for link in raw_links.split("|") if link.strip()]
+        else:
+            links = []
+
+        return cls(round_name=round_name, links=links)
+
+    async def callback(self, interaction: discord.Interaction) -> None:
         registrations_df = pd.read_csv(REGISTRATIONS_CSV)
         entries_df = pd.read_csv(ENTRIES_CSV)
 
         discord_username = str(interaction.user)
 
         registered = (
-            (registrations_df["round"].astype(str) == self.round_name) &
-            (registrations_df["discord"].astype(str) == discord_username)
+            (registrations_df["round"].astype(str) == self.round_name)
+            & (registrations_df["discord"].astype(str) == discord_username)
         ).any()
 
         if not registered:
             await interaction.response.send_message(
-                "You are not registered for this round.\n"
-                "Time limit not started.",
-                ephemeral=True
+                "You are not registered for this round.\nTime limit not started.",
+                ephemeral=True,
             )
             return
 
         # Record when the participant received the tasks
-        entry = pd.DataFrame([{
-            "round": self.round_name,
-            "discord": discord_username,
-            "time": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        }])
-
-        entries_df = pd.concat(
-            [entries_df, entry],
-            ignore_index=True
+        entry = pd.DataFrame(
+            [
+                {
+                    "round": self.round_name,
+                    "discord": discord_username,
+                    "time": datetime.now(timezone.utc).strftime(
+                        "%Y-%m-%dT%H:%M:%SZ"
+                    ),
+                }
+            ]
         )
 
+        entries_df = pd.concat([entries_df, entry], ignore_index=True)
         entries_df.to_csv(ENTRIES_CSV, index=False)
 
         message = "**Tasks:**\n" + "\n".join(
             f"{i+1}. {link}" for i, link in enumerate(self.links)
         )
 
-        await interaction.response.send_message(
-            message,
-            ephemeral=True
-        )
+        await interaction.response.send_message(message, ephemeral=True)
 
 class TaskSubmissionModal(discord.ui.Modal, title="Task Submission"):
 
