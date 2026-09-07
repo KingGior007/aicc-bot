@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import logging
-from dotenv import load_dotenv
 import os
 import pandas as pd
 from datetime import datetime, timezone
@@ -197,7 +196,7 @@ class User(commands.Cog):
     
         for _, row in recent.iterrows():
             date = row["date"].strftime("%d/%m/%Y")
-            message += f"`{row['name']}` — {date} ({row["status"]})\n"
+            message += f"`{row['name']}` — {date} ({row['status']})\n"
     
         await ctx.reply(message)
 

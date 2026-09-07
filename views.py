@@ -2,7 +2,6 @@ import discord
 import re
 from discord.ext import commands
 import logging
-from dotenv import load_dotenv
 import os
 import pandas as pd
 from datetime import datetime, timezone

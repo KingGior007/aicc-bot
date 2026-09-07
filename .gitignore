@@ -11,3 +11,5 @@ entries.csv
 discord.log
 
 .venv/
+__pycache__/
+cogs/__pycache__/

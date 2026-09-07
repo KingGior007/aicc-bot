@@ -31,16 +31,8 @@ pip install -r requirements.txt
 
 ### 3. Set your Discord bot token
 
-Create a `.env` file containing:
-
 ```bash
-DISCORD_TOKEN=<your_token>
-```
-
-You can create it directly with:
-
-```bash
-echo "DISCORD_TOKEN=<your_token>" > .env
+export DISCORD_TOKEN="your_token_here"
 ```
 
 ### 4. Run the bot
