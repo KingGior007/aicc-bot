@@ -6,6 +6,7 @@ users.csv
 rounds.csv
 registrations.csv
 entries.csv
+weekly_used.json
 
 # Logs
 discord.log
