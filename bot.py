@@ -215,26 +215,44 @@ class AICCHelpCommand(commands.HelpCommand):
             ),
         )
 
-        embed.add_field(
-            name="🚀 Quick start",
-            value=(
-                "`!rounds`  Latest rounds\n"
-                "`!link kaggle <username>`  Link Kaggle\n"
-                "`!register <round> <rated/unrated>`  Join a round"
-            ),
-            inline=False,
-        )
+        if self._is_organizer():
+            embed.add_field(
+                name="🛠 Organizer start",
+                value=(
+                    "`!create_round <name> <date>`  Create a round\n"
+                    "`!start_round <name>`  Start a round\n"
+                    "`!elo <round_name>`  Calculate ELO"
+                ),
+                inline=False,
+            )
+        else:
+            embed.add_field(
+                name="🚀 Quick start",
+                value=(
+                    "`!rounds`  Latest rounds\n"
+                    "`!link kaggle <username>`  Link Kaggle\n"
+                    "`!register <round> <rated/unrated>`  Join a round"
+                ),
+                inline=False,
+            )
 
         for cog, commands_list in mapping.items():
             visible_commands = await self.filter_commands(
                 commands_list,
                 sort=True,
             )
-            visible_commands = [
-                command
-                for command in visible_commands
-                if self._visible_to_requester(command)
-            ]
+            if self._is_organizer():
+                visible_commands = [
+                    command
+                    for command in visible_commands
+                    if self._is_organizer_command(command)
+                ]
+            else:
+                visible_commands = [
+                    command
+                    for command in visible_commands
+                    if not self._is_organizer_command(command)
+                ]
 
             if not visible_commands:
                 continue
