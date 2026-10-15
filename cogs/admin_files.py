@@ -5,6 +5,7 @@ import logging
 import os
 import pandas as pd
 from datetime import datetime, timezone
+from embed_utils import aicc_embed
 
 USERS_CSV = "users.csv"
 ROUNDS_CSV = "rounds.csv"
@@ -23,22 +24,45 @@ class FileManagement(commands.Cog, name="[ADMIN] File Management"):
             "Organizer only\n"
             "Syntax: `!view_csv [filename]`"
     )
-    async def view_csv(self, ctx, filename):
+    async def view_csv(self, ctx, filename=None):
         if not any(role.name == ADMIN_ROLE for role in ctx.author.roles):
-            await ctx.reply(f"You need the `{ADMIN_ROLE}` role to use this command.")
+            await ctx.reply(embed=aicc_embed(
+                ctx,
+                "🔴 Organizer command",
+                f"You need the `{ADMIN_ROLE}` role to use this command.",
+            ))
             return
-    
+
+        if not filename:
+            await ctx.reply(embed=aicc_embed(
+                ctx,
+                "📄 View CSV",
+                "Provide a filename, for example `!view_csv users.csv`.",
+            ))
+            return
+
+        filename = os.path.basename(filename.strip())
         if not filename.lower().endswith(".csv"):
-            await ctx.reply("The file must be a `.csv` file.")
+            filename += ".csv"
+
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        file_path = os.path.join(project_root, filename)
+
+        if not os.path.isfile(file_path):
+            await ctx.reply(embed=aicc_embed(
+                ctx,
+                "📄 CSV not found",
+                f"`{filename}` does not exist in the bot data folder.",
+            ))
             return
-    
-        if not os.path.exists(filename):
-            await ctx.reply(f"`{filename}` does not exist.")
-            return
-    
+
         await ctx.reply(
-            f"Here is `{filename}`:",
-            file=discord.File(filename)
+            embed=aicc_embed(
+                ctx,
+                "📄 CSV export",
+                f"Here is the requested data file: `{filename}`.",
+            ),
+            file=discord.File(file_path, filename=filename),
         )
     
     @commands.command(
@@ -49,14 +73,22 @@ class FileManagement(commands.Cog, name="[ADMIN] File Management"):
     )
     async def clear_entries(self, ctx):
         if not any(role.name == ADMIN_ROLE for role in ctx.author.roles):
-            await ctx.reply(f"You need the `{ADMIN_ROLE}` role to use this command.")
+            await ctx.reply(embed=aicc_embed(
+                ctx,
+                "🔴 Organizer command",
+                f"You need the `{ADMIN_ROLE}` role to use this command.",
+            ))
             return
     
         pd.DataFrame(
             columns=["round", "discord", "time"]
         ).to_csv(ENTRIES_CSV, index=False)
     
-        await ctx.reply("✅ `entries.csv` has been cleared.")
+        await ctx.reply(embed=aicc_embed(
+            ctx,
+            "🧹 Entries cleared",
+            "`entries.csv` has been cleared successfully.",
+        ))
 
 async def setup(bot):
     await bot.add_cog(FileManagement(bot))
