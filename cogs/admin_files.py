@@ -13,6 +13,8 @@ REGISTRATIONS_CSV = "registrations.csv"
 ENTRIES_CSV = "entries.csv"
 
 ADMIN_ROLE = "organizer"
+ADMIN_ROLES = {"organizer", "Bot admin"}
+ADMIN_ROLES_TEXT = "`organizer` or `Bot admin`"
 
 class FileManagement(commands.Cog, name="[ADMIN] File Management"):
     def __init__(self, bot):
@@ -25,11 +27,11 @@ class FileManagement(commands.Cog, name="[ADMIN] File Management"):
             "Syntax: `!view_csv [filename]`"
     )
     async def view_csv(self, ctx, filename=None):
-        if not any(role.name == ADMIN_ROLE for role in ctx.author.roles):
+        if not any(role.name in ADMIN_ROLES for role in ctx.author.roles):
             await ctx.reply(embed=aicc_embed(
                 ctx,
                 "🔴 Organizer command",
-                f"You need the `{ADMIN_ROLE}` role to use this command.",
+                f"You need one of the {ADMIN_ROLES_TEXT} roles to use this command.",
             ))
             return
 
@@ -72,11 +74,11 @@ class FileManagement(commands.Cog, name="[ADMIN] File Management"):
             "Syntax: `!clear_entries`"
     )
     async def clear_entries(self, ctx):
-        if not any(role.name == ADMIN_ROLE for role in ctx.author.roles):
+        if not any(role.name in ADMIN_ROLES for role in ctx.author.roles):
             await ctx.reply(embed=aicc_embed(
                 ctx,
                 "🔴 Organizer command",
-                f"You need the `{ADMIN_ROLE}` role to use this command.",
+                f"You need one of the {ADMIN_ROLES_TEXT} roles to use this command.",
             ))
             return
     

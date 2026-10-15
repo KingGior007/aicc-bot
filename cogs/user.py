@@ -12,6 +12,8 @@ REGISTRATIONS_CSV = "registrations.csv"
 ENTRIES_CSV = "entries.csv"
 
 ADMIN_ROLE = "organizer"
+ADMIN_ROLES = {"organizer", "Bot admin"}
+ADMIN_ROLES_TEXT = "`organizer` or `Bot admin`"
 INITIAL_ELO = 1000
 
 
@@ -39,8 +41,10 @@ class User(commands.Cog):
     
         # Organizer
         else:
-            if not any(role.name == ADMIN_ROLE for role in ctx.author.roles):
-                await ctx.reply(f"You need the `{ADMIN_ROLE}` role to use this command.")
+            if not any(role.name in ADMIN_ROLES for role in ctx.author.roles):
+                await ctx.reply(
+                    f"You need one of the {ADMIN_ROLES_TEXT} roles to use this command."
+                )
                 return
     
             discord_username = arg1

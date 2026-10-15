@@ -15,6 +15,8 @@ REGISTRATIONS_CSV = "registrations.csv"
 ENTRIES_CSV = "entries.csv"
 
 ADMIN_ROLE = "organizer"
+ADMIN_ROLES = {"organizer", "Bot admin"}
+ADMIN_ROLES_TEXT = "`organizer` or `Bot admin`"
 INITIAL_ELO = 1000
 ELO_K_FACTOR = 32
 MAX_POINTS = 300
@@ -34,11 +36,11 @@ class Rounds(commands.Cog, name="[ADMIN] Rounds"):
             "Organizer only"
     )
     async def edit_round(self, ctx, round_name, field, *value):
-        if not any(role.name == ADMIN_ROLE for role in ctx.author.roles):
+        if not any(role.name in ADMIN_ROLES for role in ctx.author.roles):
             await ctx.reply(embed=aicc_embed(
                 ctx,
                 "🔴 Organizer command",
-                f"You need the `{ADMIN_ROLE}` role to use this command.",
+                f"You need one of the {ADMIN_ROLES_TEXT} roles to use this command.",
             ))
             return
     
@@ -118,11 +120,11 @@ class Rounds(commands.Cog, name="[ADMIN] Rounds"):
             "Organizer only"
     )
     async def start_round(self, ctx, round_name):
-        if not any(role.name == ADMIN_ROLE for role in ctx.author.roles):
+        if not any(role.name in ADMIN_ROLES for role in ctx.author.roles):
             await ctx.reply(embed=aicc_embed(
                 ctx,
                 "🔴 Organizer command",
-                f"You need the `{ADMIN_ROLE}` role to use this command.",
+                f"You need one of the {ADMIN_ROLES_TEXT} roles to use this command.",
             ))
             return
     
@@ -195,11 +197,11 @@ class Rounds(commands.Cog, name="[ADMIN] Rounds"):
             "Organizer only"
     )
     async def create_round(self, ctx, round_name, date, *links):
-        if not any(role.name == ADMIN_ROLE for role in ctx.author.roles):
+        if not any(role.name in ADMIN_ROLES for role in ctx.author.roles):
             await ctx.reply(embed=aicc_embed(
                 ctx,
                 "🔴 Organizer command",
-                f"You need the `{ADMIN_ROLE}` role to use this command.",
+                f"You need one of the {ADMIN_ROLES_TEXT} roles to use this command.",
             ))
             return
     
@@ -255,11 +257,11 @@ class Rounds(commands.Cog, name="[ADMIN] Rounds"):
         ),
     )
     async def elo(self, ctx, *, round_name):
-        if not any(role.name == ADMIN_ROLE for role in ctx.author.roles):
+        if not any(role.name in ADMIN_ROLES for role in ctx.author.roles):
             await ctx.reply(embed=aicc_embed(
                 ctx,
                 "🔴 Organizer command",
-                f"You need the {ADMIN_ROLE} role to use this command.",
+                f"You need one of the {ADMIN_ROLES_TEXT} roles to use this command.",
             ))
             return
 
@@ -452,11 +454,11 @@ class Rounds(commands.Cog, name="[ADMIN] Rounds"):
         ),
     )
     async def bulk_pts(self, ctx, *, round_name=None):
-        if not any(role.name == ADMIN_ROLE for role in ctx.author.roles):
+        if not any(role.name in ADMIN_ROLES for role in ctx.author.roles):
             await ctx.reply(embed=aicc_embed(
                 ctx,
                 "🔴 Organizer command",
-                f"You need the {ADMIN_ROLE} role to use this command.",
+                f"You need one of the {ADMIN_ROLES_TEXT} roles to use this command.",
             ))
             return
 
@@ -642,11 +644,11 @@ class Rounds(commands.Cog, name="[ADMIN] Rounds"):
             "Organizer only"
     )
     async def bulk_rate(self, ctx, detailed=None):
-        if not any(role.name == ADMIN_ROLE for role in ctx.author.roles):
+        if not any(role.name in ADMIN_ROLES for role in ctx.author.roles):
             await ctx.reply(embed=aicc_embed(
                 ctx,
                 "🔴 Organizer command",
-                f"You need the `{ADMIN_ROLE}` role to use this command.",
+                f"You need one of the {ADMIN_ROLES_TEXT} roles to use this command.",
             ))
             return
     

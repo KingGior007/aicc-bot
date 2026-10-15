@@ -20,6 +20,8 @@ REGISTRATIONS_CSV = "registrations.csv"
 ENTRIES_CSV = "entries.csv"
 
 ADMIN_ROLE = "organizer"
+ADMIN_ROLES = {"organizer", "Bot admin"}
+ADMIN_ROLES_TEXT = "`organizer` or `Bot admin`"
 
 SHEET_JSON = Path(__file__).resolve().parent / "cogs" / "sheet.json"
 CATEGORY_ICONS_DIR = Path(__file__).resolve().parent / "category-icons"
@@ -171,7 +173,7 @@ class AICCHelpCommand(commands.HelpCommand):
 
     def _is_organizer(self):
         return any(
-            role.name == ADMIN_ROLE
+            role.name in ADMIN_ROLES
             for role in getattr(self.context.author, "roles", [])
         )
 
@@ -261,7 +263,7 @@ class AICCHelpCommand(commands.HelpCommand):
         if not self._visible_to_requester(command):
             denied_embed = self._base_embed(
                 "🔴 Organizer Command",
-                "This command is available only to users with the `organizer` role.",
+                f"This command is available only to users with the {ADMIN_ROLES_TEXT} role.",
             )
             await self.get_destination().send(embed=denied_embed)
             return
@@ -453,11 +455,11 @@ async def on_guild_join(guild):
 )
 async def task_submission(ctx):
 
-    if not any(role.name == ADMIN_ROLE for role in ctx.author.roles):
+    if not any(role.name in ADMIN_ROLES for role in ctx.author.roles):
         await ctx.reply(embed=aicc_embed(
             ctx,
             "🔴 Organizer command",
-            f"You need the `{ADMIN_ROLE}` role to use this command.",
+            f"You need one of the {ADMIN_ROLES_TEXT} roles to use this command.",
         ))
         return
 
@@ -533,11 +535,11 @@ async def task_submission(ctx):
     ),
 )
 async def weekly(ctx, action=None):
-    if not any(role.name == ADMIN_ROLE for role in ctx.author.roles):
+    if not any(role.name in ADMIN_ROLES for role in ctx.author.roles):
         await ctx.reply(embed=aicc_embed(
             ctx,
             "🔴 Organizer command",
-            f"You need the `{ADMIN_ROLE}` role to use this command.",
+            f"You need one of the {ADMIN_ROLES_TEXT} roles to use this command.",
         ))
         return
 
