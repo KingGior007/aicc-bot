@@ -71,7 +71,9 @@ class Rounds(commands.Cog, name="[ADMIN] Rounds"):
                 f"Round `{round_name}` doesn't exist.",
             ))
             return
-    
+
+        df[field] = df[field].astype("object")
+        
         # Change date
         if field == "date":
             try:
